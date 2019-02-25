@@ -90,42 +90,123 @@ class ultimateTicTacToe:
         """
         count = 0
         for start in self.globalIdx:
-            # on rows (6 cases)
             if self.board[start[0]][start[1]] == player and self.board[start[0]][start[1] + 1] == player and self.board[start[0]][start[1] + 2] == opponent:
                 count += 1      #first row 110
             if self.board[start[0]][start[1]] == opponent and self.board[start[0]][start[1] + 1] == player and self.board[start[0]][start[1] + 2] == player:
                 count += 1      #first row 011
+            if self.board[start[0]][start[1]] == player and self.board[start[0]][start[1] + 1] == opponent and self.board[start[0]][start[1] + 2] == player:
+                count += 1      #first row 101
             if self.board[start[0] + 1][start[1]] == player and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 1][start[1] + 2] == opponent:
                 count += 1      #second row 110
             if self.board[start[0] + 1][start[1]] == opponent and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 1][start[1] + 2] == player:
                 count += 1      #second row 011
+            if self.board[start[0] + 1][start[1]] == player and self.board[start[0] + 1][start[1] + 1] == opponent and self.board[start[0] + 1][start[1] + 2] == player:
+                count += 1      #second row 101
             if self.board[start[0] + 2][start[1]] == player and self.board[start[0] + 2][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 2] == opponent:
                 count += 1      #third row 110
             if self.board[start[0] + 2][start[1]] == opponent and self.board[start[0] + 2][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 2] == player:
                 count += 1      #third row 011
-            # on cols (6 cases)
+            if self.board[start[0] + 2][start[1]] == player and self.board[start[0] + 2][start[1] + 1] == opponent and self.board[start[0] + 2][start[1] + 2] == player:
+                count += 1      #third row 101
+            # on cols (9 cases)
             if self.board[start[0]][start[1]] == player and self.board[start[0] + 1][start[1]] == player and self.board[start[0] + 2][start[1]] == opponent:
                 count += 1      #first col 110
             if self.board[start[0]][start[1]] == opponent and self.board[start[0] + 1][start[1]] == player and self.board[start[0] + 2][start[1]] == player:
                 count += 1      #first col 011
+            if self.board[start[0]][start[1]] == player and self.board[start[0] + 1][start[1]] == opponent and self.board[start[0] + 2][start[1]] == player:
+                count += 1      #first col 101
             if self.board[start[0]][start[1] + 1] == player and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 1] == opponent:
                 count += 1      #second col 110
             if self.board[start[0]][start[1] + 1] == opponent and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 1] == player:
                 count += 1      #second col 011
+            if self.board[start[0]][start[1] + 1] == player and self.board[start[0] + 1][start[1] + 1] == opponent and self.board[start[0] + 2][start[1] + 1] == player:
+                count += 1      #second col 101
             if self.board[start[0]][start[1] + 2] == player and self.board[start[0] + 1][start[1] + 2] == player and self.board[start[0] + 2][start[1] + 2] == opponent:
                 count += 1      #third col 110
             if self.board[start[0]][start[1] + 2] == opponent and self.board[start[0] + 1][start[1] + 2] == player and self.board[start[0] + 2][start[1] + 2] == player:
                 count += 1      #third col 011
-            # on diagonals (4 cases)
+            if self.board[start[0]][start[1] + 2] == player and self.board[start[0] + 1][start[1] + 2] == opponent and self.board[start[0] + 2][start[1] + 2] == player:
+                count += 1      #third col 101
+            # on diagonals (6 cases)
             if self.board[start[0]][start[1]] == player and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 2] == opponent:
                 count += 1
             if self.board[start[0]][start[1]] == opponent and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 2] == player:
+                count += 1
+            if self.board[start[0]][start[1]] == player and self.board[start[0] + 1][start[1] + 1] == opponent and self.board[start[0] + 2][start[1] + 2] == player:
                 count += 1
             if self.board[start[0] + 2][start[1]] == player and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0]][start[1] + 2] == opponent:
                 count += 1
             if self.board[start[0] + 2][start[1]] == opponent and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0]][start[1] + 2] == player:
                 count += 1
+            if self.board[start[0] + 2][start[1]] == player and self.board[start[0] + 1][start[1] + 1] == opponent and self.board[start[0]][start[1] + 2] == player:
+                count += 1
         return count
+    def dangerous_num_twos(self, player, currBoardIdx):
+        """
+        This is a helper function to count unblocked two-in-a-rows and prevented two-in-a-rows
+        for the evaluation functions.
+        110 MEANS PLAYER, PLAYER, OPPONENT!! (opponent blocks the two owned by player)
+        :param player: either self.maxPlayer(X) or minPlayer(O)
+        :param opponent: when opponent is '_', we are checking unblocked two-in-a-rows
+                         or opponent is either 'X' or 'O'
+        :return: number of unblocked two-in-a-rows owned by player
+        """
+        opponent = '_'
+        count = 0
+        start = self.globalIdx[currBoardIdx]
+        # on rows (9 cases)
+        if self.board[start[0]][start[1]] == player and self.board[start[0]][start[1] + 1] == player and self.board[start[0]][start[1] + 2] == opponent:
+            count += 1      #first row 110
+        if self.board[start[0]][start[1]] == opponent and self.board[start[0]][start[1] + 1] == player and self.board[start[0]][start[1] + 2] == player:
+            count += 1      #first row 011
+        if self.board[start[0]][start[1]] == player and self.board[start[0]][start[1] + 1] == opponent and self.board[start[0]][start[1] + 2] == player:
+            count += 1      #first row 101
+        if self.board[start[0] + 1][start[1]] == player and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 1][start[1] + 2] == opponent:
+            count += 1      #second row 110
+        if self.board[start[0] + 1][start[1]] == opponent and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 1][start[1] + 2] == player:
+            count += 1      #second row 011
+        if self.board[start[0] + 1][start[1]] == player and self.board[start[0] + 1][start[1] + 1] == opponent and self.board[start[0] + 1][start[1] + 2] == player:
+            count += 1      #second row 101
+        if self.board[start[0] + 2][start[1]] == player and self.board[start[0] + 2][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 2] == opponent:
+            count += 1      #third row 110
+        if self.board[start[0] + 2][start[1]] == opponent and self.board[start[0] + 2][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 2] == player:
+            count += 1      #third row 011
+        if self.board[start[0] + 2][start[1]] == player and self.board[start[0] + 2][start[1] + 1] == opponent and self.board[start[0] + 2][start[1] + 2] == player:
+            count += 1      #third row 101
+        # on cols (9 cases)
+        if self.board[start[0]][start[1]] == player and self.board[start[0] + 1][start[1]] == player and self.board[start[0] + 2][start[1]] == opponent:
+            count += 1      #first col 110
+        if self.board[start[0]][start[1]] == opponent and self.board[start[0] + 1][start[1]] == player and self.board[start[0] + 2][start[1]] == player:
+            count += 1      #first col 011
+        if self.board[start[0]][start[1]] == player and self.board[start[0] + 1][start[1]] == opponent and self.board[start[0] + 2][start[1]] == player:
+            count += 1      #first col 101
+        if self.board[start[0]][start[1] + 1] == player and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 1] == opponent:
+            count += 1      #second col 110
+        if self.board[start[0]][start[1] + 1] == opponent and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 1] == player:
+            count += 1      #second col 011
+        if self.board[start[0]][start[1] + 1] == player and self.board[start[0] + 1][start[1] + 1] == opponent and self.board[start[0] + 2][start[1] + 1] == player:
+            count += 1      #second col 101
+        if self.board[start[0]][start[1] + 2] == player and self.board[start[0] + 1][start[1] + 2] == player and self.board[start[0] + 2][start[1] + 2] == opponent:
+            count += 1      #third col 110
+        if self.board[start[0]][start[1] + 2] == opponent and self.board[start[0] + 1][start[1] + 2] == player and self.board[start[0] + 2][start[1] + 2] == player:
+            count += 1      #third col 011
+        if self.board[start[0]][start[1] + 2] == player and self.board[start[0] + 1][start[1] + 2] == opponent and self.board[start[0] + 2][start[1] + 2] == player:
+            count += 1      #third col 101
+        # on diagonals (6 cases)
+        if self.board[start[0]][start[1]] == player and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 2] == opponent:
+            count += 1
+        if self.board[start[0]][start[1]] == opponent and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 2] == player:
+            count += 1
+        if self.board[start[0]][start[1]] == player and self.board[start[0] + 1][start[1] + 1] == opponent and self.board[start[0] + 2][start[1] + 2] == player:
+            count += 1
+        if self.board[start[0] + 2][start[1]] == player and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0]][start[1] + 2] == opponent:
+            count += 1
+        if self.board[start[0] + 2][start[1]] == opponent and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0]][start[1] + 2] == player:
+            count += 1
+        if self.board[start[0] + 2][start[1]] == player and self.board[start[0] + 1][start[1] + 1] == opponent and self.board[start[0]][start[1] + 2] == player:
+            count += 1
+        return count
+    ## helper
     def evaluatePredifined(self, isMax):
         """
         This function implements the evaluation function for ultimate tic tac toe for predifined agent.
@@ -184,8 +265,52 @@ class ultimateTicTacToe:
         score(float): estimated utility score for maxPlayer or minPlayer
         """
         #YOUR CODE HERE
-        score=0
+        score = 0
+        if self.checkWinner() == 1:
+            return 10000
+        if self.checkWinner() == -1:
+            return -10000
+        #second rule:
+        score += self.num_twos(self.maxPlayer, '_') * 500
+        score += self.num_twos(self.minPlayer, self.maxPlayer) * 100
+        score -= self.num_twos(self.minPlayer, '_') * 500
+        score -= self.num_twos(self.maxPlayer, self.minPlayer) * 100
+        if score != 0:
+            return score
+        #third rule: check corners
+        for start in self.globalIdx:
+            if self.board[start[0]][start[1]] == self.maxPlayer:
+                score += 30
+            if self.board[start[0] + 2][start[1]] == self.maxPlayer:
+                score += 30
+            if self.board[start[0]][start[1] + 2] == self.maxPlayer:
+                score += 30
+            if self.board[start[0] + 2][start[1] + 2] == self.maxPlayer:
+                score += 30
+
+        for start in self.globalIdx:
+            if self.board[start[0]][start[1]] == self.minPlayer:
+                score -= 30
+            if self.board[start[0] + 2][start[1]] == self.minPlayer:
+                score -= 30
+            if self.board[start[0]][start[1] + 2] == self.minPlayer:
+                score -= 30
+            if self.board[start[0] + 2][start[1] + 2] == self.minPlayer:
+                score -= 30
         return score
+    ## helper
+    def evaluateDangerous(self, isMax, currBoardIdx):
+        if (isMax):
+            if self.dangerous_num_twos('O', currBoardIdx):
+                return -10000
+            else :
+                return 0
+        else :
+            if self.dangerous_num_twos('X', currBoardIdx):
+                return 10000
+            else :
+                return 0
+        return 0
     def checkMovesLeft(self):
         """
         This function checks whether any legal move remains on the board.
@@ -303,9 +428,10 @@ class ultimateTicTacToe:
             return self.evaluatePredifined(not isMax)
         if isMax: #maxPlayer
             allSpots = self.allSpotsInBoard(currBoardIdx)
+            bestValue = -100000
             for i,spot in enumerate(allSpots):
                 if self.board[spot[0]][spot[1]] == '_':
-                    bestValue = -100000
+
                     self.makeMove(spot,1)
                     nextBoardIdx=spot[0]%3*3+(spot[1])%3
                     bestValue = max(bestValue,self.alphabeta_recursive(depth-1, nextBoardIdx, alpha, beta, False)) #minPlayer next
@@ -315,9 +441,10 @@ class ultimateTicTacToe:
                         break
         else: #minPlayer
             allSpots = self.allSpotsInBoard(currBoardIdx)
+            bestValue=100000
             for i,spot in enumerate(allSpots):
                 if self.board[spot[0]][spot[1]] == '_':
-                    bestValue=100000
+
                     self.makeMove(spot,-1)
                     nextBoardIdx=spot[0]%3*3+spot[1]%3
                     bestValue = min(bestValue,self.alphabeta_recursive(depth-1, nextBoardIdx, alpha, beta, True)) #maxPlayer next
@@ -326,8 +453,20 @@ class ultimateTicTacToe:
                     if beta<=alpha:
                         break
         return bestValue
+    def alphabeta_imp(self, depth, currBoardIdx,alpha,beta, isMax):
+        """
+        This function implements minimax algorithm for ultimate tic-tac-toe game.
+        input args:
+        depth(int): current depth level
+        currBoardIdx(int): current local board index
+        alpha(float): alpha value
+        beta(float): beta value
+        isMax(bool):boolean variable indicates whether it's maxPlayer or minPlayer.
+                     True for maxPlayer, False for minPlayer
+        output:
+        bestValue(float):the bestValue that current player may have
+        """
 
-    def minimax(self, depth, currBoardIdx, isMax):
         #YOUR CODE HERE
         bestValue=0.0
         if depth == 0:
@@ -341,9 +480,8 @@ class ultimateTicTacToe:
             allSpots = self.allSpotsInBoard(currBoardIdx)
             for i, spot in enumerate(allSpots):
                 if self.board[spot[0]][spot[1]] == '_':
-                    print("line275", i, spot)
                     self.makeMove(spot, turn)
-                    result = self.minimax_recursive(depth - 1, i, not isMax)#(spot[0]-spot[0]%3)*3+spot[1]-(spot[1])%3
+                    result = self.alphabeta_recursive_imp(depth - 1, i, alpha, beta, not isMax)#(spot[0]-spot[0]%3)*3+spot[1]-(spot[1])%3
                     bestValueList.append(result)
                     bestMoveList.append(spot)
                     self.makeMove(spot, 0)      # undo the makeMove
@@ -355,36 +493,196 @@ class ultimateTicTacToe:
             #print(bestMoveList)
             index = bestValueList.index(bestValue)
             bestMove = bestMoveList[index]
-            print("line288", bestValue, bestMove)
+        return bestValue, bestMove
+
+    def alphabeta_recursive_imp(self,depth,currBoardIdx,alpha,beta,isMax):
+        """
+        This function implements alpha-beta algorithm for ultimate tic-tac-toe game.
+        input args:
+        depth(int): current depth level
+        currBoardIdx(int): current local board index
+        alpha(float): alpha value
+        beta(float): beta value
+        isMax(bool):boolean variable indicates whether it's maxPlayer or minPlayer.
+                     True for maxPlayer, False for minPlayer
+        output:
+        bestValue(float):the bestValue that current player may have
+        """
+        #YOUR CODE HERE
+        if depth == 0:
+            #self.printGameBoard()
+            #print('eval',self.evaluatePredifined(not isMax),not isMax)
+            danger =  self.evaluateDangerous(isMax, currBoardIdx)
+            if danger != 0:
+                return danger
+            return self.evaluateDesigned(not isMax)
+        if isMax: #maxPlayer
+            allSpots = self.allSpotsInBoard(currBoardIdx)
+            bestValue = -100000
+            for i,spot in enumerate(allSpots):
+
+                if self.board[spot[0]][spot[1]] == '_':
+
+                    self.makeMove(spot,1)
+                    nextBoardIdx=spot[0]%3*3+(spot[1])%3
+                    bestValue = max(bestValue,self.alphabeta_recursive_imp(depth-1, nextBoardIdx, alpha, beta, False)) #minPlayer next
+                    alpha = max(alpha, bestValue)
+                    self.makeMove(spot,0)
+                    if beta<=alpha:
+                        break
+        else: #minPlayer
+            allSpots = self.allSpotsInBoard(currBoardIdx)
+            bestValue=100000
+            for i,spot in enumerate(allSpots):
+                if self.board[spot[0]][spot[1]] == '_':
+
+                    self.makeMove(spot,-1)
+                    nextBoardIdx=spot[0]%3*3+spot[1]%3
+                    bestValue = min(bestValue,self.alphabeta_recursive_imp(depth-1, nextBoardIdx, alpha, beta, True)) #maxPlayer next
+                    beta = min(beta, bestValue)
+                    self.makeMove(spot,0)
+                    if beta<=alpha:
+                        break
+        return bestValue
+    def minimax(self, depth, currBoardIdx, isMax):
+        #YOUR CODE HERE
+        bestValue=0.0
+        if depth == 0:
+
+            return self.evaluatePredifined(isMax)
+        else :
+            turn = 1
+            if not isMax:
+                turn = -1
+            bestValueList = []
+            bestMoveList  = []
+            allSpots = self.allSpotsInBoard(currBoardIdx)
+            for i, spot in enumerate(allSpots):
+                if self.board[spot[0]][spot[1]] == '_':
+
+                    self.makeMove(spot, turn)
+                    result = self.minimax_recursive(depth - 1, i, not isMax)#(spot[0]-spot[0]%3)*3+spot[1]-(spot[1])%3
+                    print("line275", i, spot, result)
+                    bestValueList.append(result)
+                    bestMoveList.append(spot)
+                    if spot == (4,4):
+                        print("line 564", bestValue)
+                    self.makeMove(spot, 0)      # undo the makeMove
+            if (isMax) :
+                bestValue = max(bestValueList)
+            else :
+                bestValue = min(bestValueList)
+            #print(bestValue,bestValueList)
+            #print(bestMoveList)
+            index = bestValueList.index(bestValue)
+            bestMove = bestMoveList[index]
+            print("line572", bestValue, bestMove)
         return bestValue, bestMove
     ### recursive helper by hf
+    # def minimax(self, depth, currBoardIdx, isMax):
+    #     bestValue=0.0
+    #     if depth == 1:
+    #         return self.evaluatePredifined(isMax)
+    #     else :
+    #         bestValueList = []
+    #         bestMoveList  = []
+    #         allSpots = self.allSpotsInBoard(currBoardIdx)
+    #         if isMax:
+    #             for i, spot in enumerate(allSpots):
+    #                 if self.board[spot[0]][spot[1]] == '_':
+    #                     self.makeMove(spot, 1)
+    #                     bestValue_max, bestValue_min = self.minimax_recursive(depth - 1, i, not isMax)
+    #                     bestValueList.append(bestValue_max)
+    #                     bestMoveList.append(spot)
+    #                     self.makeMove(spot, 0)      # undo the makeMove
+    #             bestValue = max(bestValueList)
+    #         else:
+    #             for i, spot in enumerate(allSpots):
+    #                 if self.board[spot[0]][spot[1]] == '_':
+    #                     self.makeMove(spot, -1)
+    #                     bestValue_max, bestValue_min = self.minimax_recursive(depth - 1, i, not isMax)
+    #                     bestValueList.append(bestValue_min)
+    #                     bestMoveList.append(spot)
+    #                     self.makeMove(spot, 0)      # undo the makeMove
+    #             bestValue = min(bestValueList)
+    #             print("line 289", bestValue)
+    #         index = bestValueList.index(bestValue)
+    #         bestMove = bestMoveList[index]
+    #     print("line 311", bestValue, isMax)
+    #     return bestValue, bestMove
+    # def minimax_recursive(self, depth, currBoardIdx, isMax):
+    #     bestValue=0.0
+    #     if depth == 0:
+    #
+    #
+    #         bestValue_max = self.evaluatePredifined(True)
+    #         bestValue_min = self.evaluatePredifined(False)
+    #
+    #         return bestValue_max, bestValue_min
+    #     else :
+    #         bestValueList_max = []
+    #         bestValueList_min = []
+    #         allSpots = self.allSpotsInBoard(currBoardIdx)
+    #         if isMax:
+    #             for i, spot in enumerate(allSpots):
+    #                 if self.board[spot[0]][spot[1]] == '_':
+    #                     self.makeMove(spot, 1)
+    #                     bestValue_max, bestValue_min = self.minimax_recursive(depth - 1, i, not isMax)
+    #                     bestValueList_max.append(bestValue_max)
+    #                     bestValueList_min.append(bestValue_min)
+    #                     self.makeMove(spot, 0)      # undo the makeMove
+    #             bestValue_max = max(bestValueList_max)
+    #             index = bestValueList_max.index(bestValue_max)
+    #             bestValue_min = bestValueList_min[index]
+    #         else:
+    #             for i, spot in enumerate(allSpots):
+    #                 if self.board[spot[0]][spot[1]] == '_':
+    #                     self.makeMove(spot, -1)
+    #                     bestValue_max, bestValue_min = self.minimax_recursive(depth - 1, i, not isMax)
+    #
+    #                     bestValueList_max.append(bestValue_max)
+    #                     bestValueList_min.append(bestValue_min)
+    #                     self.makeMove(spot, 0)      # undo the makeMove
+    #             bestValue_min = min(bestValueList_min)
+    #             index = bestValueList_min.index(bestValue_min)
+    #             bestValue_max = bestValueList_max[index]
+    #         #print("line 353", bestValue_max,bestValue_min)
+    #     return bestValue_max, bestValue_min
     def minimax_recursive(self, depth, currBoardIdx, isMax):
         if depth == 0:
             #self.printGameBoard()
             #print('eval',self.evaluatePredifined(not isMax),not isMax)
+            if (self.evaluatePredifined(isMax) == -500):
+                print("line547")
+                self.printGameBoard()
             return self.evaluatePredifined(not isMax)
         if isMax: #maxPlayer
             allSpots = self.allSpotsInBoard(currBoardIdx)
+            bestValue = -100000
             for i,spot in enumerate(allSpots):
                 if self.board[spot[0]][spot[1]] == '_':
-                    bestValue = -100000
+
                     self.makeMove(spot,1)
                     nextBoardIdx=spot[0]%3*3+(spot[1])%3
                     currValue = self.minimax_recursive(depth-1, nextBoardIdx, False) #minPlayer next
                     bestValue = max(currValue, bestValue)
+                    if (depth == 2 and currBoardIdx == 4) :
+                        print("line664", i, spot, bestValue)
                     self.makeMove(spot,0)
 
         else: #minPlayer
             allSpots = self.allSpotsInBoard(currBoardIdx)
+            bestValue=100000
             for i,spot in enumerate(allSpots):
                 if self.board[spot[0]][spot[1]] == '_':
-                    bestValue=100000
+
                     self.makeMove(spot,-1)
                     nextBoardIdx=spot[0]%3*3+spot[1]%3
                     currValue = self.minimax_recursive(depth-1, nextBoardIdx, True) #maxPlayer next
                     bestValue = min(currValue, bestValue)
                     self.makeMove(spot,0)
-
+        if (depth == 2 and currBoardIdx == 4) :
+            print("depth == 2 and currBoardIdx == 4",  bestValue)
         return bestValue
     def playGamePredifinedAgent(self,maxFirst,isMinimaxOffensive,isMinimaxDefensive):
         """
@@ -434,6 +732,7 @@ class ultimateTicTacToe:
 
             self.makeMove(best_move, turn)
             self.printGameBoard()
+            print("=======================new move ==============")
             bestMove.append(best_move)
             bestValue.append(best_value)
             gameBoards.append(self.board.copy())
@@ -456,9 +755,43 @@ class ultimateTicTacToe:
         winner(int): 1 for maxPlayer is the winner, -1 for minPlayer is the winner, and 0 for tie.
         """
         #YOUR CODE HERE
+        maxFirst = randint(0,1)==1
+        startBoardIdx = randint(0,8)
+        maxFirst = 1
+        startBoardIdx = 2
         bestMove=[]
         gameBoards=[]
         winner=0
+
+        turn = 1 # 1 for maxPlayer, -1 for minPlayer
+        if (not maxFirst) :
+            turn = -1
+        currBoardIdx = startBoardIdx
+
+        alpha = -100000
+        beta = 100000
+        while self.checkWinner() == 0:
+            #self.printGameBoard()
+            if (turn == 1) :
+                best_value, best_move = self.alphabeta(self.maxDepth,currBoardIdx,alpha,beta,True)
+            else :
+                best_value, best_move = self.alphabeta_imp(self.maxDepth,currBoardIdx,alpha,beta,False)
+            print(best_move)
+            nextBoardIdx = (best_move[0] - self.globalIdx[currBoardIdx][0])* 3 + best_move[1] - self.globalIdx[currBoardIdx][1]
+            currBoardIdx = nextBoardIdx
+
+            self.makeMove(best_move, turn)
+            #self.printGameBoard()
+            bestMove.append(best_move)
+
+            gameBoards.append(self.board.copy())
+            #time.sleep(1)
+            turn = -turn
+
+
+        winner = self.checkWinner()
+        expandedNodes = 0
+        self.printGameBoard()
         return gameBoards, bestMove, winner
 
     def checkValid(self, x, y, currBoardIdx):
@@ -530,8 +863,9 @@ class ultimateTicTacToe:
 
 if __name__=="__main__":
     uttt=ultimateTicTacToe()
+    #gameBoards, bestMove, winner = uttt.playGameYourAgent()
     #gameBoards, bestMove, winner=uttt.playGameHuman()
-    gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,False,False)
+    gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,True,True)
     if winner == 1:
         print("The winner is maxPlayer!!!")
     elif winner == -1:
