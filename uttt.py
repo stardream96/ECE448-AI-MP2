@@ -49,6 +49,59 @@ class ultimateTicTacToe:
         print('\n'.join([' '.join([str(cell) for cell in row]) for row in self.board[6:9]])+'\n')
 
 
+
+
+    def num_twos(self, player, opponent):
+        """
+        This is a helper function to count unblocked two-in-a-rows and prevented two-in-a-rows
+        for the evaluation functions.
+        110 MEANS PLAYER, PLAYER, OPPONENT!! (opponent blocks the two owned by player)
+        :param player: either self.maxPlayer(X) or minPlayer(O)
+        :param opponent: when opponent is '_', we are checking unblocked two-in-a-rows
+                         or opponent is either 'X' or 'O'
+        :return: number of unblocked two-in-a-rows owned by player
+        """
+        count = 0
+        for start in self.globalIdx:
+            # on rows (6 cases)
+            if self.board[start[0]][start[1]] == player and self.board[start[0]][start[1] + 1] == player and self.board[start[0]][start[1] + 2] == opponent:
+                count += 1      #first row 110
+            if self.board[start[0]][start[1]] == opponent and self.board[start[0]][start[1] + 1] == player and self.board[start[0]][start[1] + 2] == player:
+                count += 1      #first row 011
+            if self.board[start[0] + 1][start[1]] == player and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 1][start[1] + 2] == opponent:
+                count += 1      #second row 110
+            if self.board[start[0] + 1][start[1]] == opponent and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 1][start[1] + 2] == player:
+                count += 1      #second row 011
+            if self.board[start[0] + 2][start[1]] == player and self.board[start[0] + 2][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 2] == opponent:
+                count += 1      #third row 110
+            if self.board[start[0] + 2][start[1]] == opponent and self.board[start[0] + 2][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 2] == player:
+                count += 1      #third row 011
+            # on cols (6 cases)
+            if self.board[start[0]][start[1]] == player and self.board[start[0] + 1][start[1]] == player and self.board[start[0] + 2][start[1]] == opponent:
+                count += 1      #first col 110
+            if self.board[start[0]][start[1]] == opponent and self.board[start[0] + 1][start[1]] == player and self.board[start[0] + 2][start[1]] == player:
+                count += 1      #first col 011
+            if self.board[start[0]][start[1] + 1] == player and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 1] == opponent:
+                count += 1      #second col 110
+            if self.board[start[0]][start[1] + 1] == opponent and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 1] == player:
+                count += 1      #second col 011
+            if self.board[start[0]][start[1] + 2] == player and self.board[start[0] + 1][start[1] + 2] == player and self.board[start[0] + 2][start[1] + 2] == opponent:
+                count += 1      #third col 110
+            if self.board[start[0]][start[1] + 2] == opponent and self.board[start[0] + 1][start[1] + 2] == player and self.board[start[0] + 2][start[1] + 2] == player:
+                count += 1      #third col 011
+            # on diagonals (4 cases)
+            if self.board[start[0]][start[1]] == player and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 2] == opponent:
+                count += 1
+            if self.board[start[0]][start[1]] == opponent and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0] + 2][start[1] + 2] == player:
+                count += 1
+            if self.board[start[0] + 2][start[1]] == player and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0]][start[1] + 2] == opponent:
+                count += 1
+            if self.board[start[0] + 2][start[1]] == opponent and self.board[start[0] + 1][start[1] + 1] == player and self.board[start[0]][start[1] + 2] == player:
+                count += 1
+        return count
+
+
+
     def evaluatePredifined(self, isMax):
         """
         This function implements the evaluation function for ultimate tic tac toe for predifined agent.
@@ -59,7 +112,43 @@ class ultimateTicTacToe:
         score(float): estimated utility score for maxPlayer or minPlayer
         """
         #YOUR CODE HERE
-        score=0
+        score = 0
+        if isMax:
+            if self.checkWinner() == 1:
+                return 10000
+            #second rule:
+            score += self.num_twos(self.maxPlayer, '_') * 500
+            score += self.num_twos(self.minPlayer, self.maxPlayer) * 100
+            if score != 0:
+                return score
+            #third rule: check corners
+            for start in self.globalIdx:
+                if self.board[start[0]][start[1]] == self.maxPlayer:
+                    score += 30
+                if self.board[start[0] + 2][start[1]] == self.maxPlayer:
+                    score += 30
+                if self.board[start[0]][start[1] + 2] == self.maxPlayer:
+                    score += 30
+                if self.board[start[0] + 2][start[1] + 2] == self.maxPlayer:
+                    score += 30
+        else:
+            if self.checkWinner() == -1:
+                return -10000
+            #second rule:
+            score -= self.num_twos(self.minPlayer, '_') * 100
+            score -= self.num_twos(self.maxPlayer, self.minPlayer) * 500
+            if score != 0:
+                return score
+            #third rule: check corners
+            for start in self.globalIdx:
+                if self.board[start[0]][start[1]] == self.minPlayer:
+                    score -= 30
+                if self.board[start[0] + 2][start[1]] == self.minPlayer:
+                    score -= 30
+                if self.board[start[0]][start[1] + 2] == self.minPlayer:
+                    score -= 30
+                if self.board[start[0] + 2][start[1] + 2] == self.minPlayer:
+                    score -= 30
         return score
 
 
@@ -76,6 +165,8 @@ class ultimateTicTacToe:
         score=0
         return score
 
+
+
     def checkMovesLeft(self):
         """
         This function checks whether any legal move remains on the board.
@@ -84,8 +175,11 @@ class ultimateTicTacToe:
                         on the board.
         """
         #YOUR CODE HERE
-        movesLeft=True
-        return movesLeft
+        for line in self.board:
+            for slot in line:
+                if slot == '_':
+                    return True
+        return False
 
     def checkWinner(self):
         #Return termimnal node status for maximizer player 1-win,0-tie,-1-lose
@@ -97,8 +191,44 @@ class ultimateTicTacToe:
                      Return -1 if miniPlayer is the winner.
         """
         #YOUR CODE HERE
-        winner=0
+        #check row wins
+        for line in self.board:
+            if (line[0] == line[1] == line[2] == self.maxPlayer) or (line[3] == line[4] == line[5] == self.maxPlayer) or (line[6] == line[7] == line[8] == self.maxPlayer):
+                return 1
+            if (line[0] == line[1] == line[2] == self.minPlayer) or (line[3] == line[4] == line[5] == self.minPlayer) or (line[6] == line[7] == line[8] == self.minPlayer):
+                return -1
+        #check column wins
+        for start in self.globalIdx:
+            if self.board[start[0]][start[1]] == self.board[start[0]][start[1] + 1] == self.board[start[0]][start[1] + 2] == self.maxPlayer:
+                return 1
+            if self.board[start[0]][start[1]] == self.board[start[0]][start[1] + 1] == self.board[start[0]][start[1] + 2] == self.minPlayer:
+                return -1
+            if self.board[start[0] + 1][start[1]] == self.board[start[0] + 1][start[1] + 1] == self.board[start[0] + 1][start[1] + 2] == self.maxPlayer:
+                return 1
+            if self.board[start[0] + 1][start[1]] == self.board[start[0] + 1][start[1] + 1] == self.board[start[0] + 1][start[1] + 2] == self.minPlayer:
+                return -1
+            if self.board[start[0] + 2][start[1]] == self.board[start[0] + 2][start[1] + 1] == self.board[start[0] + 2][start[1] + 2] == self.maxPlayer:
+                return 1
+            if self.board[start[0] + 2][start[1]] == self.board[start[0] + 2][start[1] + 1] == self.board[start[0] + 2][start[1] + 2] == self.minPlayer:
+                return -1
+        #check diagonal wins:
+        for start in self.globalIdx:
+            if self.board[start[0]][start[1]] == self.board[start[0] + 1][start[1] + 1] == self.board[start[0] + 2][start[1] + 2] == self.maxPlayer:
+                return 1
+            if self.board[start[0]][start[1]] == self.board[start[0] + 1][start[1] + 1] == self.board[start[0] + 2][start[1] + 2] == self.minPlayer:
+                return -1
+            if self.board[start[0] + 2][start[1]] == self.board[start[0] + 1][start[1] + 1] == self.board[start[0]][start[1] + 2] == self.maxPlayer:
+                return 1
+            if self.board[start[0] + 2][start[1]] == self.board[start[0] + 1][start[1] + 1] == self.board[start[0]][start[1] + 2] == self.minPlayer:
+                return -1
+        #no winner:
         return 0
+
+
+
+
+
+
 
     def alphabeta(self,depth,currBoardIdx,alpha,beta,isMax):
         """

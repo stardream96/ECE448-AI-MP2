@@ -196,12 +196,11 @@ def recursive(board, remaining_orig, pents, transform):
 					recur_remain = remaining.copy()
 					recur_remain.remove(var_idx)
 					recur_result = recursive(recur_board, recur_remain, pents, transform)
-					print('ongoing')
 					if len(recur_result) != 0:
 						recur_result.append((var, (i,j)))
 						return recur_result
 
-    return []
+	return []
 def solve(board, pents):
 
     # m = board.shape[0]
@@ -218,10 +217,8 @@ def solve(board, pents):
 	num_pents = len(pents)
 	remaining_orig = list(range(num_pents))
 	solution = recursive(sol_board, remaining_orig, pents, transform)
-	print ("solution:", solution)
-	print ("board size:", board.shape)
 	solution.pop(0)
-	print ("solution:", solution)
+	print ("solution:", board)
 	print ("board size:", board.shape)
 	return solution
 
