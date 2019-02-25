@@ -184,38 +184,7 @@ class ultimateTicTacToe:
         score(float): estimated utility score for maxPlayer or minPlayer
         """
         #YOUR CODE HERE
-        score = 0
-        if self.checkWinner() == 1:
-            return 10000
-        if self.checkWinner() == -1:
-            return -10000
-        #second rule:
-        score += self.num_twos(self.maxPlayer, '_') * 500
-        score += self.num_twos(self.minPlayer, self.maxPlayer) * 100
-        score -= self.num_twos(self.minPlayer, '_') * 500
-        score -= self.num_twos(self.maxPlayer, self.minPlayer) * 100
-        if score != 0:
-            return score
-        #third rule: check corners
-        for start in self.globalIdx:
-            if self.board[start[0]][start[1]] == self.maxPlayer:
-                score += 30
-            if self.board[start[0] + 2][start[1]] == self.maxPlayer:
-                score += 30
-            if self.board[start[0]][start[1] + 2] == self.maxPlayer:
-                score += 30
-            if self.board[start[0] + 2][start[1] + 2] == self.maxPlayer:
-                score += 30
-
-        for start in self.globalIdx:
-            if self.board[start[0]][start[1]] == self.minPlayer:
-                score -= 30
-            if self.board[start[0] + 2][start[1]] == self.minPlayer:
-                score -= 30
-            if self.board[start[0]][start[1] + 2] == self.minPlayer:
-                score -= 30
-            if self.board[start[0] + 2][start[1] + 2] == self.minPlayer:
-                score -= 30
+        score=0
         return score
     def checkMovesLeft(self):
         """
@@ -357,6 +326,7 @@ class ultimateTicTacToe:
                     if beta<=alpha:
                         break
         return bestValue
+<<<<<<< HEAD
     
     def minimax(self, depth, currBoardIdx, isMax):
         #YOUR CODE HERE
@@ -505,6 +475,10 @@ class ultimateTicTacToe:
         bestValue(float):the bestValue that current player may have
         """
 
+=======
+
+    def minimax(self, depth, currBoardIdx, isMax):
+>>>>>>> parent of 497e1e9... fixed bugs, minimax ab should work now
         #YOUR CODE HERE
         bestValue=0.0
         if depth == 0:
@@ -518,8 +492,14 @@ class ultimateTicTacToe:
             allSpots = self.allSpotsInBoard(currBoardIdx)
             for i, spot in enumerate(allSpots):
                 if self.board[spot[0]][spot[1]] == '_':
+<<<<<<< HEAD
                     self.makeMove(spot, turn)
                     result = self.alphabeta_recursive_imp(depth - 1, i, alpha, beta, not isMax)#(spot[0]-spot[0]%3)*3+spot[1]-(spot[1])%3
+=======
+                    print("line275", i, spot)
+                    self.makeMove(spot, turn)
+                    result = self.minimax_recursive(depth - 1, i, not isMax)#(spot[0]-spot[0]%3)*3+spot[1]-(spot[1])%3
+>>>>>>> parent of 497e1e9... fixed bugs, minimax ab should work now
                     bestValueList.append(result)
                     bestMoveList.append(spot)
                     self.makeMove(spot, 0)      # undo the makeMove
@@ -531,6 +511,7 @@ class ultimateTicTacToe:
             #print(bestMoveList)
             index = bestValueList.index(bestValue)
             bestMove = bestMoveList[index]
+<<<<<<< HEAD
         return bestValue, bestMove
     
     def alphabeta_recursive_imp(self,depth,currBoardIdx,alpha,beta,isMax):
@@ -551,6 +532,16 @@ class ultimateTicTacToe:
             #self.printGameBoard()
             #print('eval',self.evaluatePredifined(not isMax),not isMax)
             return self.evaluateDesigned(not isMax)
+=======
+            print("line288", bestValue, bestMove)
+        return bestValue, bestMove
+    ### recursive helper by hf
+    def minimax_recursive(self, depth, currBoardIdx, isMax):
+        if depth == 0:
+            #self.printGameBoard()
+            #print('eval',self.evaluatePredifined(not isMax),not isMax)
+            return self.evaluatePredifined(not isMax)
+>>>>>>> parent of 497e1e9... fixed bugs, minimax ab should work now
         if isMax: #maxPlayer
             allSpots = self.allSpotsInBoard(currBoardIdx)
             for i,spot in enumerate(allSpots):
@@ -558,11 +549,18 @@ class ultimateTicTacToe:
                     bestValue = -100000
                     self.makeMove(spot,1)
                     nextBoardIdx=spot[0]%3*3+(spot[1])%3
+<<<<<<< HEAD
                     bestValue = max(bestValue,self.alphabeta_recursive_imp(depth-1, nextBoardIdx, alpha, beta, False)) #minPlayer next
                     alpha = max(alpha, bestValue)
                     self.makeMove(spot,0)
                     if beta<=alpha:
                         break
+=======
+                    currValue = self.minimax_recursive(depth-1, nextBoardIdx, False) #minPlayer next
+                    bestValue = max(currValue, bestValue)
+                    self.makeMove(spot,0)
+
+>>>>>>> parent of 497e1e9... fixed bugs, minimax ab should work now
         else: #minPlayer
             allSpots = self.allSpotsInBoard(currBoardIdx)
             for i,spot in enumerate(allSpots):
@@ -570,6 +568,7 @@ class ultimateTicTacToe:
                     bestValue=100000
                     self.makeMove(spot,-1)
                     nextBoardIdx=spot[0]%3*3+spot[1]%3
+<<<<<<< HEAD
                     bestValue = min(bestValue,self.alphabeta_recursive_imp(depth-1, nextBoardIdx, alpha, beta, True)) #maxPlayer next
                     beta = min(beta, bestValue)
                     self.makeMove(spot,0)
@@ -577,6 +576,14 @@ class ultimateTicTacToe:
                         break
         return bestValue
     def playGameYourAgent(self,maxFirst,isPredefinedOffensive,isPredefinedDefensive,startBoardIdx):
+=======
+                    currValue = self.minimax_recursive(depth-1, nextBoardIdx, True) #maxPlayer next
+                    bestValue = min(currValue, bestValue)
+                    self.makeMove(spot,0)
+
+        return bestValue
+    def playGamePredifinedAgent(self,maxFirst,isMinimaxOffensive,isMinimaxDefensive):
+>>>>>>> parent of 497e1e9... fixed bugs, minimax ab should work now
         """
         This function implements the processes of the game of your own agent vs predifined offensive agent.
         input args:
@@ -618,12 +625,17 @@ class ultimateTicTacToe:
                 if (isPredefinedDefensive):
                     best_value, best_move = self.alphabeta(self.maxDepth,currBoardIdx,alpha,beta,False)
                 else :
+<<<<<<< HEAD
                     best_value, best_move = self.alphabeta_imp(self.maxDepth,currBoardIdx,alpha,beta,False)
+=======
+                    best_value, best_move = self.alphabeta(self.maxDepth,currBoardIdx,alpha,beta,False) ## not implemented yet
+>>>>>>> parent of 497e1e9... fixed bugs, minimax ab should work now
             print(best_move)
             nextBoardIdx = (best_move[0] - self.globalIdx[currBoardIdx][0])* 3 + best_move[1] - self.globalIdx[currBoardIdx][1]
             currBoardIdx = nextBoardIdx
 
             self.makeMove(best_move, turn)
+<<<<<<< HEAD
             #self.printGameBoard()
             bestMove.append(best_move)
             bestValue.append(best_value)
@@ -632,10 +644,38 @@ class ultimateTicTacToe:
             turn = -turn
 
             
+=======
+            self.printGameBoard()
+            bestMove.append(best_move)
+            bestValue.append(best_value)
+            gameBoards.append(self.board.copy())
+            time.sleep(1)
+            turn = -turn
+
+
+>>>>>>> parent of 497e1e9... fixed bugs, minimax ab should work now
         winner = self.checkWinner()
         expandedNodes = 0
         self.printGameBoard()
         return gameBoards, bestMove, expandedNodes, bestValue, winner
+<<<<<<< HEAD
+=======
+
+    def playGameYourAgent(self):
+        """
+        This function implements the processes of the game of your own agent vs predifined offensive agent.
+        input args:
+        output:
+        bestMove(list of tuple): list of bestMove coordinates at each step
+        gameBoards(list of 2d lists): list of game board positions at each move
+        winner(int): 1 for maxPlayer is the winner, -1 for minPlayer is the winner, and 0 for tie.
+        """
+        #YOUR CODE HERE
+        bestMove=[]
+        gameBoards=[]
+        winner=0
+        return gameBoards, bestMove, winner
+>>>>>>> parent of 497e1e9... fixed bugs, minimax ab should work now
 
     def checkValid(self, x, y, currBoardIdx):
         if (x >= 9 or x < 0 or y >= 9 or y < 0):
@@ -707,6 +747,7 @@ class ultimateTicTacToe:
 if __name__=="__main__":
     uttt=ultimateTicTacToe()
     #gameBoards, bestMove, winner=uttt.playGameHuman()
+<<<<<<< HEAD
     #gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,False,False)
     numPlay = 20
     numPlayLeft = numPlay
@@ -723,6 +764,9 @@ if __name__=="__main__":
         numPlayLeft-=1
         print(numPlayLeft)
     print('MaxPlayerWinRate:',win/numPlay*100,'%')
+=======
+    gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,False,False)
+>>>>>>> parent of 497e1e9... fixed bugs, minimax ab should work now
     if winner == 1:
         print("The winner is maxPlayer!!!")
     elif winner == -1:
