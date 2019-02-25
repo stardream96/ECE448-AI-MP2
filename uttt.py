@@ -241,7 +241,49 @@ class ultimateTicTacToe:
                 return -1
         #no winner:
         return 0
-    def alphabeta(self,depth,currBoardIdx,alpha,beta,isMax):
+    def alphabeta(self, depth, currBoardIdx,alpha,beta, isMax):
+        """
+        This function implements minimax algorithm for ultimate tic-tac-toe game.
+        input args:
+        depth(int): current depth level
+        currBoardIdx(int): current local board index
+        alpha(float): alpha value
+        beta(float): beta value
+        isMax(bool):boolean variable indicates whether it's maxPlayer or minPlayer.
+                     True for maxPlayer, False for minPlayer
+        output:
+        bestValue(float):the bestValue that current player may have
+        """
+
+        #YOUR CODE HERE
+        bestValue=0.0
+        if depth == 0:
+            return self.evaluatePredifined(isMax)
+        else :
+            turn = 1
+            if not isMax:
+                turn = -1
+            bestValueList = []
+            bestMoveList  = []
+            allSpots = self.allSpotsInBoard(currBoardIdx)
+            for i, spot in enumerate(allSpots):
+                if self.board[spot[0]][spot[1]] == '_':
+                    self.makeMove(spot, turn)
+                    result = self.alphabeta_recursive(depth - 1, i, alpha, beta, not isMax)#(spot[0]-spot[0]%3)*3+spot[1]-(spot[1])%3
+                    bestValueList.append(result)
+                    bestMoveList.append(spot)
+                    self.makeMove(spot, 0)      # undo the makeMove
+            if (isMax) :
+                bestValue = max(bestValueList)
+            else :
+                bestValue = min(bestValueList)
+            #print(bestValue,bestValueList)
+            #print(bestMoveList)
+            index = bestValueList.index(bestValue)
+            bestMove = bestMoveList[index]
+        return bestValue, bestMove
+
+    def alphabeta_recursive(self,depth,currBoardIdx,alpha,beta,isMax):
         """
         This function implements alpha-beta algorithm for ultimate tic-tac-toe game.
         input args:
@@ -255,83 +297,95 @@ class ultimateTicTacToe:
         bestValue(float):the bestValue that current player may have
         """
         #YOUR CODE HERE
-        bestValue=0.0
+        if depth == 0:
+            #self.printGameBoard()
+            #print('eval',self.evaluatePredifined(not isMax),not isMax)
+            return self.evaluatePredifined(not isMax)
+        if isMax: #maxPlayer
+            allSpots = self.allSpotsInBoard(currBoardIdx)
+            for i,spot in enumerate(allSpots):
+                if self.board[spot[0]][spot[1]] == '_':
+                    bestValue = -100000
+                    self.makeMove(spot,1)
+                    nextBoardIdx=spot[0]%3*3+(spot[1])%3
+                    bestValue = max(bestValue,self.alphabeta_recursive(depth-1, nextBoardIdx, alpha, beta, False)) #minPlayer next
+                    alpha = max(alpha, bestValue)
+                    self.makeMove(spot,0)
+                    if beta<=alpha:
+                        break
+        else: #minPlayer
+            allSpots = self.allSpotsInBoard(currBoardIdx)
+            for i,spot in enumerate(allSpots):
+                if self.board[spot[0]][spot[1]] == '_':
+                    bestValue=100000
+                    self.makeMove(spot,-1)
+                    nextBoardIdx=spot[0]%3*3+spot[1]%3
+                    bestValue = min(bestValue,self.alphabeta_recursive(depth-1, nextBoardIdx, alpha, beta, True)) #maxPlayer next
+                    beta = min(beta, bestValue)
+                    self.makeMove(spot,0)
+                    if beta<=alpha:
+                        break
         return bestValue
 
     def minimax(self, depth, currBoardIdx, isMax):
         #YOUR CODE HERE
         bestValue=0.0
-        if depth == 1:
+        if depth == 0:
             return self.evaluatePredifined(isMax)
         else :
-            ##
+            turn = 1
+            if not isMax:
+                turn = -1
             bestValueList = []
             bestMoveList  = []
             allSpots = self.allSpotsInBoard(currBoardIdx)
-            if isMax:
-                for i, spot in enumerate(allSpots):
-                    if self.board[spot[0]][spot[1]] == '_':
-                        self.makeMove(spot, 1)
-                        bestValue_max, bestValue_min = self.minimax_recursive(depth - 1, i, not isMax)
-                        bestValueList.append(bestValue_max)
-                        bestMoveList.append(spot)
-                        self.makeMove(spot, 0)      # undo the makeMove
+            for i, spot in enumerate(allSpots):
+                if self.board[spot[0]][spot[1]] == '_':
+                    print("line275", i, spot)
+                    self.makeMove(spot, turn)
+                    result = self.minimax_recursive(depth - 1, i, not isMax)#(spot[0]-spot[0]%3)*3+spot[1]-(spot[1])%3
+                    bestValueList.append(result)
+                    bestMoveList.append(spot)
+                    self.makeMove(spot, 0)      # undo the makeMove
+            if (isMax) :
                 bestValue = max(bestValueList)
-            else:
-                for i, spot in enumerate(allSpots):
-                    if self.board[spot[0]][spot[1]] == '_':
-                        self.makeMove(spot, -1)
-                        bestValue_max, bestValue_min = self.minimax_recursive(depth - 1, i, not isMax)
-                        bestValueList.append(bestValue_min)
-                        bestMoveList.append(spot)
-                        self.makeMove(spot, 0)      # undo the makeMove
+            else :
                 bestValue = min(bestValueList)
-                print("line 289", bestValue)
+            #print(bestValue,bestValueList)
+            #print(bestMoveList)
             index = bestValueList.index(bestValue)
             bestMove = bestMoveList[index]
-        print("line 311", bestValue, isMax)
+            print("line288", bestValue, bestMove)
         return bestValue, bestMove
     ### recursive helper by hf
     def minimax_recursive(self, depth, currBoardIdx, isMax):
-        bestValue=0.0
         if depth == 0:
-
-
-            bestValue_max = self.evaluatePredifined(True)
-            bestValue_min = self.evaluatePredifined(False)
-            # if (bestValue_min == -10000) :
-            #     print(bestValue_min)
-            #     self.printGameBoard()
-            return bestValue_max, bestValue_min
-        else :
-            bestValueList_max = []
-            bestValueList_min = []
+            #self.printGameBoard()
+            #print('eval',self.evaluatePredifined(not isMax),not isMax)
+            return self.evaluatePredifined(not isMax)
+        if isMax: #maxPlayer
             allSpots = self.allSpotsInBoard(currBoardIdx)
-            if isMax:
-                for i, spot in enumerate(allSpots):
-                    if self.board[spot[0]][spot[1]] == '_':
-                        self.makeMove(spot, 1)
-                        bestValue_max, bestValue_min = self.minimax_recursive(depth - 1, i, not isMax)
-                        bestValueList_max.append(bestValue_max)
-                        bestValueList_min.append(bestValue_min)
-                        self.makeMove(spot, 0)      # undo the makeMove
-                bestValue_max = max(bestValueList_max)
-                index = bestValueList_max.index(bestValue_max)
-                bestValue_min = bestValueList_min[index]
-            else:
-                for i, spot in enumerate(allSpots):
-                    if self.board[spot[0]][spot[1]] == '_':
-                        self.makeMove(spot, -1)
-                        bestValue_max, bestValue_min = self.minimax_recursive(depth - 1, i, not isMax)
+            for i,spot in enumerate(allSpots):
+                if self.board[spot[0]][spot[1]] == '_':
+                    bestValue = -100000
+                    self.makeMove(spot,1)
+                    nextBoardIdx=spot[0]%3*3+(spot[1])%3
+                    currValue = self.minimax_recursive(depth-1, nextBoardIdx, False) #minPlayer next
+                    bestValue = max(currValue, bestValue)
+                    self.makeMove(spot,0)
 
-                        bestValueList_max.append(bestValue_max)
-                        bestValueList_min.append(bestValue_min)
-                        self.makeMove(spot, 0)      # undo the makeMove
-                bestValue_min = min(bestValueList_min)
-                index = bestValueList_min.index(bestValue_min)
-                bestValue_max = bestValueList_max[index]
-            #print("line 353", bestValue_max,bestValue_min)
-        return bestValue_max, bestValue_min
+        else: #minPlayer
+            allSpots = self.allSpotsInBoard(currBoardIdx)
+            for i,spot in enumerate(allSpots):
+                if self.board[spot[0]][spot[1]] == '_':
+                    bestValue=100000
+                    self.makeMove(spot,-1)
+                    nextBoardIdx=spot[0]%3*3+spot[1]%3
+                    currValue = self.minimax_recursive(depth-1, nextBoardIdx, True) #maxPlayer next
+                    bestValue = min(currValue, bestValue)
+                    self.makeMove(spot,0)
+
+        return bestValue
     def playGamePredifinedAgent(self,maxFirst,isMinimaxOffensive,isMinimaxDefensive):
         """
         This function implements the processes of the game of predifined offensive agent vs defensive agent.
@@ -358,6 +412,8 @@ class ultimateTicTacToe:
         bestMove=[]
         bestValue=[]
         gameBoards=[]
+        alpha = -100000
+        beta = 100000
         while self.checkWinner() == 0:
             #self.printGameBoard()
             if (turn == 1) :
@@ -474,8 +530,8 @@ class ultimateTicTacToe:
 
 if __name__=="__main__":
     uttt=ultimateTicTacToe()
-    gameBoards, bestMove, winner=uttt.playGameHuman()
-    #gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,True,True)
+    #gameBoards, bestMove, winner=uttt.playGameHuman()
+    gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,False,False)
     if winner == 1:
         print("The winner is maxPlayer!!!")
     elif winner == -1:
