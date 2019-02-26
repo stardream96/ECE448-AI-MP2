@@ -73,6 +73,79 @@ class ultimateTicTacToe:
             self.board[location[0]][location[1]] = '_'
         elif isMax == -1:
             self.board[location[0]][location[1]] = 'O'
+    def ec_winlist(self):
+        eclist = [0,0,0,0,0,0,0,0,0]
+        for lineidx in range(9):
+            local = int(int(lineidx) / 3)
+            line = self.board[lineidx]
+            if (line[0] == line[1] == line[2] == self.maxPlayer) or (line[3] == line[4] == line[5] == self.maxPlayer) or (line[6] == line[7] == line[8] == self.maxPlayer):
+                eclist[local] = 1
+            if (line[0] == line[1] == line[2] == self.minPlayer) or (line[3] == line[4] == line[5] == self.minPlayer) or (line[6] == line[7] == line[8] == self.minPlayer):
+                eclist[local] = -1
+        #check column wins
+        for idx in range(9):
+            start = self.globalIdx[idx]
+            if self.board[start[0]][start[1]] == self.board[start[0] + 1][start[1] ] == self.board[start[0]+ 2 ][start[1]] == self.maxPlayer:
+                eclist[idx] = 1
+            if self.board[start[0]][start[1]] == self.board[start[0] + 1][start[1] ] == self.board[start[0]+ 2 ][start[1]] == self.minPlayer:
+                eclist[idx] = -1
+            if self.board[start[0]][start[1] + 1] == self.board[start[0] + 1][start[1] + 1] == self.board[start[0] + 2][start[1] + 1] == self.maxPlayer:
+                eclist[idx] = 1
+            if self.board[start[0]][start[1] + 1] == self.board[start[0] + 1][start[1] + 1] == self.board[start[0] + 2][start[1] + 1] == self.minPlayer:
+                eclist[idx] = -1
+            if self.board[start[0]][start[1] + 2] == self.board[start[0] + 1][start[1] + 2] == self.board[start[0] + 2][start[1] + 2] == self.maxPlayer:
+                eclist[idx] = 1
+            if self.board[start[0]][start[1] + 2] == self.board[start[0] + 1][start[1] + 2] == self.board[start[0] + 2][start[1] + 2] == self.minPlayer:
+                eclist[idx] = -1
+        #check diagonal wins:
+        for idx in range(9):
+            start = self.globalIdx[idx]
+            if self.board[start[0]][start[1]] == self.board[start[0] + 1][start[1] + 1] == self.board[start[0] + 2][start[1] + 2] == self.maxPlayer:
+                eclist[idx] = 1
+            if self.board[start[0]][start[1]] == self.board[start[0] + 1][start[1] + 1] == self.board[start[0] + 2][start[1] + 2] == self.minPlayer:
+                eclist[idx] = -1
+            if self.board[start[0] + 2][start[1]] == self.board[start[0] + 1][start[1] + 1] == self.board[start[0]][start[1] + 2] == self.maxPlayer:
+                eclist[idx] = 1
+            if self.board[start[0] + 2][start[1]] == self.board[start[0] + 1][start[1] + 1] == self.board[start[0]][start[1] + 2] == self.minPlayer:
+                eclist[idx] = -1
+        #no winner:
+        return eclist
+    def ec_checkwin(self, eclist):
+        if (eclist[0] == eclist[1] == eclist[2] == 1) :
+            return 1
+        if (eclist[0] == eclist[1] == eclist[2] == -1) :
+            return -1
+        if (eclist[3] == eclist[4] == eclist[5] == 1) :
+            return 1
+        if (eclist[3] == eclist[4] == eclist[5] == -1) :
+            return -1
+        if (eclist[6] == eclist[7] == eclist[8] == 1) :
+            return 1
+        if (eclist[6] == eclist[7] == eclist[8] == -1) :
+            return -1
+        #column
+        if (eclist[0] == eclist[3] == eclist[6] == 1) :
+            return 1
+        if (eclist[0] == eclist[3] == eclist[6] == -1) :
+            return -1
+        if (eclist[1] == eclist[4] == eclist[7] == 1) :
+            return 1
+        if (eclist[1] == eclist[4] == eclist[7] == -1) :
+            return -1
+        if (eclist[2] == eclist[5] == eclist[8] == 1) :
+            return 1
+        if (eclist[2] == eclist[5] == eclist[8] == -1) :
+            return -1
+        #diagonal
+        if (eclist[0] == eclist[4] == eclist[8] == 1) :
+            return 1
+        if (eclist[0] == eclist[4] == eclist[8] == -1) :
+            return -1
+        if (eclist[2] == eclist[4] == eclist[6] == 1) :
+            return 1
+        if (eclist[2] == eclist[4] == eclist[6] == -1) :
+            return -1
+        return 0
     #####
     def printGameBoard(self):
         """
@@ -549,6 +622,53 @@ class ultimateTicTacToe:
                     if beta<=alpha:
                         break
         return bestValue
+    def alphabeta_imp_ec(self, depth, currBoardIdx,alpha,beta, isMax):
+        """
+        This function implements minimax algorithm for ultimate tic-tac-toe game.
+        input args:
+        depth(int): current depth level
+        currBoardIdx(int): current local board index
+        alpha(float): alpha value
+        beta(float): beta value
+        isMax(bool):boolean variable indicates whether it's maxPlayer or minPlayer.
+                     True for maxPlayer, False for minPlayer
+        output:
+        bestValue(float):the bestValue that current player may have
+        """
+
+        #YOUR CODE HERE
+        bestValue=0.0
+        if depth == 0:
+            return self.evaluateDesigned(isMax)
+        else :
+            turn = 1
+            if not isMax:
+                turn = -1
+            bestValueList = []
+            bestMoveList  = []
+            allSpots = self.allSpotsInBoard(currBoardIdx)
+            for i, spot in enumerate(allSpots):
+                eclist = self.ec_winlist()
+                if eclist[i] != 0:
+                    continue
+                if self.board[spot[0]][spot[1]] == '_':
+                    self.makeMove(spot, turn)
+                    if (self.checkWinner()+1)/2==isMax:
+                        self.makeMove(spot, 0)
+                        return 100000*(isMax*2-1), spot
+                    result = self.alphabeta_recursive_imp(depth - 1, i, alpha, beta, not isMax)#(spot[0]-spot[0]%3)*3+spot[1]-(spot[1])%3
+                    bestValueList.append(result)
+                    bestMoveList.append(spot)
+                    self.makeMove(spot, 0)      # undo the makeMove
+            if (isMax) :
+                bestValue = max(bestValueList)
+            else :
+                bestValue = min(bestValueList)
+            #print(bestValue,bestValueList)
+            #print(bestMoveList)
+            index = bestValueList.index(bestValue)
+            bestMove = bestMoveList[index]
+        return bestValue, bestMove
     def playGameYourAgent(self):
         """
         This function implements the processes of the game of your own agent vs predifined offensive agent.
@@ -613,6 +733,7 @@ class ultimateTicTacToe:
             turn = -turn
             self.expandedNodesList.append(self.expandedNodes)
         winner = self.checkWinner()
+        self.printGameBoard()
         return gameBoards, bestMove, winner
 
     def checkValid(self, x, y, currBoardIdx):
@@ -679,25 +800,62 @@ class ultimateTicTacToe:
         winner = self.checkWinner()
         self.printGameBoard()
         return gameBoards, bestMove, winner
+    def ec(self):
+        maxFirst = randint(0,1)==1
+        startBoardIdx = randint(0,8)
+        print("maxFirst", maxFirst, "startBoardIdx", startBoardIdx)
+        turn = 1 # 1 for maxPlayer, -1 for minPlayer
+        if (not maxFirst) :
+            turn = -1
+        currBoardIdx = startBoardIdx
+        bestMove=[]
+        bestValue=[]
+        gameBoards=[]
+        alpha = -100000
+        beta = 100000
+
+        self.expandedNodesList = []
+        eclist = [0,0,0,0,0,0,0,0,0]
+        while self.ec_checkwin(eclist) == 0:
+            #self.printGameBoard()
+            alpha = -100000.0
+            beta = 100000.0
+            self.expandedNodes = 0
+            if (turn == 1) :
+                #if (isPredefinedOffensive):
+                best_value, best_move = self.alphabeta_imp_ec(self.maxDepth,currBoardIdx,alpha,beta,False)
+
+            else :
+
+                best_value, best_move = self.alphabeta_imp_ec(self.maxDepth,currBoardIdx,alpha,beta,False)
+            nextBoardIdx = (best_move[0] - self.globalIdx[currBoardIdx][0])* 3 + best_move[1] - self.globalIdx[currBoardIdx][1]
+            currBoardIdx = nextBoardIdx
+
+            self.makeMove(best_move, turn)
+            #self.printGameBoard()
+            bestMove.append(best_move)
+            bestValue.append(best_value)
+            gameBoards.append(self.board.copy())
+            #time.sleep(1)
+            turn = -turn
+            self.expandedNodesList.append(self.expandedNodes)
+            eclist = self.ec_winlist()
+            if eclist[currBoardIdx] != 0 :
+                break
+        winner = self.ec_checkwin(eclist)
+        self.printGameBoard()
+        return gameBoards, bestMove, winner
 if __name__=="__main__":
 
-    # win = 0
-    # for i in range (20):
-    #     print("========game", i+1)
-    #     uttt=ultimateTicTacToe()
-    #     gameBoards, bestMove, winner = uttt.playGameYourAgent()
-    #     print(gameBoards)
-    #     print(bestMove)
-    #     print(winner)
-    #     if winner == -1:
-    #         win+=1
-    # print("win", win)
+
     uttt=ultimateTicTacToe()
-    gameBoards, bestMove, winner = uttt.playGameHuman()
-    #gameBoards, bestMove, winner=uttt.playGameHuman()
-    #gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,True,True)
-    print(gameBoards)
+    #gameBoards, bestMove, winner = uttt.ec()
+    gameBoards, bestMove, winner=uttt.playGameYourAgent()
+    #gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(False,False,True)
+    #print(gameBoards)
     print(bestMove)
+    # print(expandedNodes)
+    # print(bestValue)
     print(winner)
     if winner == 1:
         print("The winner is maxPlayer!!!")
