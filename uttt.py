@@ -575,6 +575,8 @@ class ultimateTicTacToe:
         self.expandedNodesList = []
         while self.checkWinner() == 0:
             #self.printGameBoard()
+            alpha = -100000.0
+            beta = 100000.0
             self.expandedNodes = 0
             if (turn == 1) :
                 #if (isPredefinedOffensive):
@@ -643,12 +645,10 @@ class ultimateTicTacToe:
         bestMove=[]
         gameBoards=[]
         while self.checkWinner() == 0:
-            #self.printGameBoard()
+            alpha = -100000.0
+            beta = 100000.0
             if (turn == 1) :
-                if (isMinimaxOffensive):
-                    best_value, best_move = self.minimax(self.maxDepth, currBoardIdx, True)
-                else :
-                    best_value, best_move = self.alphabeta(self.maxDepth,currBoardIdx,alpha,beta,True) ## not implemented yet
+                best_value, best_move = self.alphabeta_imp(self.maxDepth,currBoardIdx,alpha,beta,False)
 
             else :
                 print("waiting for human move")
@@ -681,21 +681,24 @@ class ultimateTicTacToe:
         return gameBoards, bestMove, winner
 if __name__=="__main__":
 
-    win = 0
-    for i in range (20):
-        print("========game", i+1)
-        uttt=ultimateTicTacToe()
-        gameBoards, bestMove, winner = uttt.playGameYourAgent()
-        print(gameBoards)
-        print(bestMove)
-        #print(bestValue)
-        print(winner)
-        if winner == -1:
-            win+=1
-    print("win", win)
+    # win = 0
+    # for i in range (20):
+    #     print("========game", i+1)
+    #     uttt=ultimateTicTacToe()
+    #     gameBoards, bestMove, winner = uttt.playGameYourAgent()
+    #     print(gameBoards)
+    #     print(bestMove)
+    #     print(winner)
+    #     if winner == -1:
+    #         win+=1
+    # print("win", win)
+    uttt=ultimateTicTacToe()
+    gameBoards, bestMove, winner = uttt.playGameHuman()
     #gameBoards, bestMove, winner=uttt.playGameHuman()
     #gameBoards, bestMove, expandedNodes, bestValue, winner=uttt.playGamePredifinedAgent(True,True,True)
-
+    print(gameBoards)
+    print(bestMove)
+    print(winner)
     if winner == 1:
         print("The winner is maxPlayer!!!")
     elif winner == -1:
